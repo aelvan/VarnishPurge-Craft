@@ -19,7 +19,7 @@ config/general.php file:
     'varnishPurgeRelated' => true,
     'varnishLogAll' => 0,
     
-The varnishUrl setting can also be an array if you are running a multi language site:
+The `varnishUrl` setting can also be an array if you are running a multi language site:
     
     'varnishUrl' => array(
         'no' => 'http://your-varnish-server.com/no/',
@@ -91,6 +91,16 @@ If you plan to run a Varnish server, you really need to get your hands dirty and
 unfortunately. :) Have a look at [this gist](https://gist.github.com/aelvan/eba03969f91c1bd51c40) for an example VCL file.
 It's based on the [Varnish 4.0 template made by Mattias Geniar](https://github.com/mattiasgeniar/varnish-4.0-configuration-templates) 
 with some adjustments for Craft. 
+  
+Alternatives
+---
+A good alternative to this plugin is [Josh Angell's CacheMonster plugin](https://github.com/supercool/Cache-Monster/). It takes
+a different approach, using the result of the {% cache %} tag to find the urls that needs to be purged, and also provides a feature to
+warm the cache. 
+
+This is a great solution if you're using {% cache %}, but most of the sites I'm using Varnish on is very content
+heavy and I've opted not to use it. When you have tens of thousands of element criterias that needs to be updated when content is 
+updated, it's really a problem. 
   
 Price, license and support
 ---
