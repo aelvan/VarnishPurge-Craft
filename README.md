@@ -61,6 +61,16 @@ entries, categories, matrix blocks and assets.
 The plugin also adds a new element action to entries and categories for purging individual elements manually.
 When doing this, related elements are not purged, only the selected elements.
 
+Alternatives
+---
+A good alternative to this plugin is [Josh Angell's CacheMonster plugin](https://github.com/supercool/Cache-Monster/). It takes
+a different approach, using the result of the {% cache %} tag to find the urls that needs to be purged, and also provides a feature to
+warm the cache. 
+
+This is a great solution if you're using {% cache %}, but most of the sites I'm using Varnish on is very content
+heavy and I've opted not to use it. When you have tens of thousands of element criterias that needs to be updated when content is 
+updated, it's really a problem. 
+
 Setting HTTP headers in your templates
 ---
 Varnish uses the HTTP headers sent by Craft to determine if/how to cache a request. You can configure this in
@@ -91,16 +101,9 @@ If you plan to run a Varnish server, you really need to get your hands dirty and
 unfortunately. :) Have a look at [this gist](https://gist.github.com/aelvan/eba03969f91c1bd51c40) for an example VCL file.
 It's based on the [Varnish 4.0 template made by Mattias Geniar](https://github.com/mattiasgeniar/varnish-4.0-configuration-templates) 
 with some adjustments for Craft. 
-  
-Alternatives
----
-A good alternative to this plugin is [Josh Angell's CacheMonster plugin](https://github.com/supercool/Cache-Monster/). It takes
-a different approach, using the result of the {% cache %} tag to find the urls that needs to be purged, and also provides a feature to
-warm the cache. 
 
-This is a great solution if you're using {% cache %}, but most of the sites I'm using Varnish on is very content
-heavy and I've opted not to use it. When you have tens of thousands of element criterias that needs to be updated when content is 
-updated, it's really a problem. 
+Also, read [this thread on the Craft CMS StackExchange](http://craftcms.stackexchange.com/questions/2716/varnish-4-x-and-craft/) and
+[Josh Angell's blogpost over at SuperCool](https://supercool.github.io/2015/06/08/making-craft-sing-with-varnish-and-nginx.html).
   
 Price, license and support
 ---
