@@ -33,9 +33,12 @@ class VarnishpurgeService extends BaseApplicationComponent
             foreach ($elements as $element) {
                 $uris = array_merge($uris, $this->_getElementUris($element, $locale, $purgeRelated));
             }
-
-            if (count($uris) > 0) {
-                $this->_makeTask('Varnishpurge_Purge', $uris, $locale);
+            
+            $urls = $this->_generateUrls($uris, $locale);
+            $urls = array_merge($urls, $this->_getMappedUrls($urls));
+            
+            if (count($urls) > 0) {
+                $this->_makeTask('Varnishpurge_Purge', $urls, $locale);
             }
             
         }
@@ -195,7 +198,67 @@ class VarnishpurgeService extends BaseApplicationComponent
         return $criteria->find();
     }
 
+    /**
+     * 
+     * 
+     * @param $uris
+     * @param $locale
+     * @return array
+     */
+    private function _generateUrls ($uris, $locale) 
+    {
+        $urls = array();
+        $varnishUrlSetting = craft()->varnishpurge->getSetting('varnishUrl');
+        
+        if (is_array($varnishUrlSetting)) {
+            $varnishUrl = $varnishUrlSetting[$locale];
+        } else {
+            $varnishUrl = $varnishUrlSetting;
+        }
+        
+        if (!$varnishUrl) {
+            VarnishpurgePlugin::log('Varnish URL could not be found', LogLevel::Error);
+            return $urls;
+        }
+        
+        foreach ($uris as $uri) {
+            if ($uri == '__home__') {
+                array_push($urls, $varnishUrl);
+            } else {
+                array_push($urls, $varnishUrl . $uri);
+            }
+        }
 
+        return $urls;
+    }
+
+    /**
+     * 
+     * 
+     * @param $uris
+     * @return array
+     */
+    private function _getMappedUrls($urls) {
+        $mappedUrls = array();
+        $map = $this->getSetting('varnishPurgeUrlMap');
+        
+        if (is_array($map)) {
+            foreach ($urls as $url) {
+                if (isset($map[$url])) {
+                    $mappedVal = $map[$url];
+
+                    if (is_array($mappedVal)) {
+                        $mappedUrls = array_merge($mappedUrls, $mappedVal);
+                    } else {
+                        array_push($mappedUrls, $mappedVal);
+                    }
+                }
+            }
+        }
+        
+        return $mappedUrls;
+    }
+    
     /**
      * Create task for purging urls
      *
@@ -204,11 +267,11 @@ class VarnishpurgeService extends BaseApplicationComponent
      * @param $locale
      */
 
-    private function _makeTask($taskName, $uris, $locale)
+    private function _makeTask($taskName, $urls, $locale)
     {
-        $uris = array_unique($uris);
+        $urls = array_unique($urls);
         
-        VarnishpurgePlugin::log('Creating task (' . $taskName . ', ' . implode(',', $uris) . ', ' . $locale . ')', LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
+        VarnishpurgePlugin::log('Creating task (' . $taskName . ', ' . implode(',', $urls) . ', ' . $locale . ')', LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
 
         // If there are any pending tasks, just append the paths to it
         $task = craft()->tasks->getNextPendingTask($taskName);
@@ -216,25 +279,25 @@ class VarnishpurgeService extends BaseApplicationComponent
         if ($task && is_array($task->settings)) {
             $settings = $task->settings;
 
-            if (!is_array($settings['uris'])) {
-                $settings['uris'] = array($settings['uris']);
+            if (!is_array($settings['urls'])) {
+                $settings['urls'] = array($settings['urls']);
             }
 
-            if (is_array($uris)) {
-                $settings['uris'] = array_merge($settings['uris'], $uris);
+            if (is_array($urls)) {
+                $settings['urls'] = array_merge($settings['urls'], $urls);
             } else {
-                $settings['uris'][] = $uris;
+                $settings['urls'][] = $urls;
             }
 
             // Make sure there aren't any duplicate paths
-            $settings['uris'] = array_unique($settings['uris']);
+            $settings['urls'] = array_unique($settings['urls']);
 
             // Set the new settings and save the task
             $task->settings = $settings;
             craft()->tasks->saveTask($task, false);
         } else {
             craft()->tasks->createTask($taskName, null, array(
-              'uris' => $uris,
+              'urls' => $urls,
               'locale' => $locale
             ));
         }
@@ -269,6 +332,7 @@ class VarnishpurgeService extends BaseApplicationComponent
         $settings['varnishPurgeRelated'] = craft()->config->get('varnishPurgeRelated');
         $settings['varnishUrl'] = craft()->config->get('varnishUrl');
         $settings['varnishLogAll'] = craft()->config->get('varnishLogAll');
+        $settings['varnishPurgeUrlMap'] = craft()->config->get('varnishPurgeUrlMap');
 
         return $settings;
     }

@@ -18,6 +18,10 @@ config/general.php file:
     'varnishPurgeEnabled' => true,
     'varnishPurgeRelated' => true,
     'varnishLogAll' => 0,
+    'varnishPurgeUrlMap' => array(
+            'http://www.mydomain.com/en/' => 'http://www.mydomain.com/' 
+    ),
+    
     
 The `varnishUrl` setting can also be an array if you are running a multi language site:
     
@@ -43,6 +47,10 @@ as possible.
 ####varnishLogAll
 When set to `1` some additional logging is forced even if devMode is disabled. Useful for debugging in production 
 environments without having to enable devMode.
+
+####varnishPurgeUrlMap
+A lookup map for purging additional urls that needs it when a given url is purged.
+
 
 How it works
 ---

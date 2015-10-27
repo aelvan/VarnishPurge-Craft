@@ -4,7 +4,7 @@ namespace Craft;
 
 class Varnishpurge_PurgeTask extends BaseTask
 {
-    private $_uris;
+    private $_urls;
     private $_locale;
 
     public function getDescription()
@@ -14,31 +14,19 @@ class Varnishpurge_PurgeTask extends BaseTask
 
     public function getTotalSteps()
     {
-        $uris = $this->getSettings()->uris;
+        $urls = $this->getSettings()->urls;
         $this->_locale = $this->getSettings()->locale;
         
-        $this->_uris = array();
-        $this->_uris = array_chunk($uris, 20);
+        $this->_urls = array();
+        $this->_urls = array_chunk($urls, 20);
 
-        return count($this->_uris);
+        return count($this->_urls);
     }
 
     public function runStep($step)
     {
         VarnishpurgePlugin::log('Varnish purge task run step: ' . $step, LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
         
-        $varnishUrlSetting = craft()->varnishpurge->getSetting('varnishUrl');
-        if (is_array($varnishUrlSetting)) {
-            $varnishUrl = $varnishUrlSetting[$this->_locale];
-        } else {
-            $varnishUrl = $varnishUrlSetting;
-        }
-        
-        if (!$varnishUrl) {
-            VarnishpurgePlugin::log('Varnish URL could not be found', LogLevel::Error);
-            return false;
-        }
-
         $batch = \Guzzle\Batch\BatchBuilder::factory()
           ->transferRequests(20)
           ->bufferExceptions()
@@ -47,13 +35,7 @@ class Varnishpurge_PurgeTask extends BaseTask
         $client = new \Guzzle\Http\Client();
         $client->setDefaultOption('headers/Accept', '*/*');
 
-        foreach ($this->_uris[$step] as $uri) {
-            if ($uri == '__home__') {
-                $url = $varnishUrl;
-            } else {
-                $url = $varnishUrl . $uri;
-            }
-
+        foreach ($this->_urls[$step] as $url) {
             VarnishpurgePlugin::log('Adding url to purge: ' . $url, LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
 
             $request = $client->createRequest('PURGE', $url);
@@ -74,7 +56,7 @@ class Varnishpurge_PurgeTask extends BaseTask
     protected function defineSettings()
     {
         return array(
-          'uris' => AttributeType::Mixed,
+          'urls' => AttributeType::Mixed,
           'locale' => AttributeType::String
         );
     }
