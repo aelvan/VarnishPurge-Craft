@@ -110,6 +110,8 @@ unfortunately. :) Have a look at [this gist](https://gist.github.com/aelvan/eba0
 It's based on the [Varnish 4.0 template made by Mattias Geniar](https://github.com/mattiasgeniar/varnish-4.0-configuration-templates) 
 with some adjustments for Craft. 
 
+**Note: Remember to add your server ip to the purge acl** 
+
 Also, read [this thread on the Craft CMS StackExchange](http://craftcms.stackexchange.com/questions/2716/varnish-4-x-and-craft/) and
 [Josh Angell's blogpost over at SuperCool](https://supercool.github.io/2015/06/08/making-craft-sing-with-varnish-and-nginx.html).
   
