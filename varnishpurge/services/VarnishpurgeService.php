@@ -222,11 +222,15 @@ class VarnishpurgeService extends BaseApplicationComponent
         }
         
         foreach ($uris as $uri) {
-            if ($uri == '__home__') {
-                array_push($urls, $varnishUrl);
-            } else {
-                array_push($urls, $varnishUrl . $uri);
+            $path = $uri == '__home__' ? '' : $uri;
+            $url = rtrim($varnishUrl, '/').'/'.trim($path, '/');
+
+            if ($path && craft()->config->get('addTrailingSlashesToUrls'))
+            {
+                $url .= '/';
             }
+
+            array_push($urls, $url);
         }
 
         return $urls;
