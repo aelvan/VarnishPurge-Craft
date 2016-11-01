@@ -16,7 +16,7 @@ class Varnishpurge_PurgeTask extends BaseTask
     {
         $urls = $this->getSettings()->urls;
         $this->_locale = $this->getSettings()->locale;
-        
+
         $this->_urls = array();
         $this->_urls = array_chunk($urls, 20);
 
@@ -25,8 +25,8 @@ class Varnishpurge_PurgeTask extends BaseTask
 
     public function runStep($step)
     {
-        VarnishpurgePlugin::log('Varnish purge task run step: ' . $step, LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
-        
+        VarnishpurgePlugin::log('Varnish purge task run step: ' . $step, LogLevel::Info, craft()->varnishpurge->getSetting('logAll'));
+
         $batch = \Guzzle\Batch\BatchBuilder::factory()
           ->transferRequests(20)
           ->bufferExceptions()
@@ -36,7 +36,7 @@ class Varnishpurge_PurgeTask extends BaseTask
         $client->setDefaultOption('headers/Accept', '*/*');
 
         foreach ($this->_urls[$step] as $url) {
-            VarnishpurgePlugin::log('Adding url to purge: ' . $url, LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
+            VarnishpurgePlugin::log('Adding url to purge: ' . $url, LogLevel::Info, craft()->varnishpurge->getSetting('logAll'));
 
             $request = $client->createRequest('PURGE', $url);
             $batch->add($request);
