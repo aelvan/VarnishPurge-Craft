@@ -13,8 +13,8 @@ class VarnishpurgeService extends BaseApplicationComponent
     public function purgeElement($element, $purgeRelated = true)
     {
         $this->purgeElements(array($element), $purgeRelated);
-    }    
-    
+    }
+
     /**
      * Purge an array of elements
      *
@@ -25,22 +25,22 @@ class VarnishpurgeService extends BaseApplicationComponent
         if (count($elements)>0) {
 
             // Assume that we only want to purge elements in one locale.
-            // May not be the case if other thirdparty plugins sends elements. 
+            // May not be the case if other thirdparty plugins sends elements.
             $locale = $elements[0]->locale;
-            
+
             $uris = array();
-            
+
             foreach ($elements as $element) {
                 $uris = array_merge($uris, $this->_getElementUris($element, $locale, $purgeRelated));
             }
-            
+
             $urls = $this->_generateUrls($uris, $locale);
             $urls = array_merge($urls, $this->_getMappedUrls($urls));
-            
+
             if (count($urls) > 0) {
                 $this->_makeTask('Varnishpurge_Purge', $urls, $locale);
             }
-            
+
         }
     }
 
@@ -177,8 +177,16 @@ class VarnishpurgeService extends BaseApplicationComponent
 
             }
         }
-        
-        return array_unique($uris);
+
+		$uris = array_unique($uris);
+
+		foreach (craft()->plugins->call('varnishPurgeTransformElementUris', [$element, $uris]) as $plugin => $pluginUris) {
+			if ($pluginUris !== null) {
+				$uris = $pluginUris;
+			}
+		}
+
+        return $uris;
     }
 
 
@@ -199,28 +207,28 @@ class VarnishpurgeService extends BaseApplicationComponent
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param $uris
      * @param $locale
      * @return array
      */
-    private function _generateUrls ($uris, $locale) 
+    private function _generateUrls ($uris, $locale)
     {
         $urls = array();
         $varnishUrlSetting = craft()->varnishpurge->getSetting('varnishUrl');
-        
+
         if (is_array($varnishUrlSetting)) {
             $varnishUrl = $varnishUrlSetting[$locale];
         } else {
             $varnishUrl = $varnishUrlSetting;
         }
-        
+
         if (!$varnishUrl) {
             VarnishpurgePlugin::log('Varnish URL could not be found', LogLevel::Error);
             return $urls;
         }
-        
+
         foreach ($uris as $uri) {
             $path = $uri == '__home__' ? '' : $uri;
             $url = rtrim($varnishUrl, '/').'/'.trim($path, '/');
@@ -237,15 +245,15 @@ class VarnishpurgeService extends BaseApplicationComponent
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param $uris
      * @return array
      */
     private function _getMappedUrls($urls) {
         $mappedUrls = array();
         $map = $this->getSetting('varnishPurgeUrlMap');
-        
+
         if (is_array($map)) {
             foreach ($urls as $url) {
                 if (isset($map[$url])) {
@@ -259,10 +267,10 @@ class VarnishpurgeService extends BaseApplicationComponent
                 }
             }
         }
-        
+
         return $mappedUrls;
     }
-    
+
     /**
      * Create task for purging urls
      *
@@ -274,7 +282,7 @@ class VarnishpurgeService extends BaseApplicationComponent
     private function _makeTask($taskName, $urls, $locale)
     {
         $urls = array_unique($urls);
-        
+
         VarnishpurgePlugin::log('Creating task (' . $taskName . ', ' . implode(',', $urls) . ', ' . $locale . ')', LogLevel::Info, craft()->varnishpurge->getSetting('varnishLogAll'));
 
         // If there are any pending tasks, just append the paths to it
@@ -307,8 +315,8 @@ class VarnishpurgeService extends BaseApplicationComponent
         }
 
     }
-    
-    
+
+
     /**
      * Gets a plugin setting
      *
