@@ -1,0 +1,20 @@
+[
+    {
+        "version": "0.2.0",
+        "downloadUrl": "https://github.com/aelvan/VarnishPurge-Craft/archive/master.zip",
+        "date": "2016-12-20T20:44:00+02:00",
+        "notes": [
+            "[Added] Varnish Purge now uses its own config file. Breaks backward compability, make sure you update your config (by @timkelty).",
+            "[Added] Added varnishPurgeTransformElementUris hook (by @timkelty).",
+            "[Added] Add Commerce products to related purging, simplify element type conditionals (by @timkelty)."
+        ]
+    },
+    {
+        "version": "0.1.0",
+        "downloadUrl": "https://github.com/aelvan/VarnishPurge-Craft/archive/master.zip",
+        "date": "2015-10-17T12:00:00+02:00",
+        "notes": [
+            "[Added] Initial release"
+        ]
+    }
+]
