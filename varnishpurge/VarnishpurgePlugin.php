@@ -9,7 +9,7 @@ class VarnishpurgePlugin extends BasePlugin
     {
         parent::init();
 
-        if (craft()->varnishpurge->getSetting('varnishPurgeEnabled')) { // element saved
+        if (craft()->varnishpurge->getSetting('purgeEnabled')) { // element saved
             craft()->on('elements.onSaveElement', function (Event $event) {
                 craft()->varnishpurge->purgeElement($event->params['element'], craft()->varnishpurge->getSetting('varnishPurgeRelated'));
             });
@@ -41,7 +41,7 @@ class VarnishpurgePlugin extends BasePlugin
     {
         $actions = array();
 
-        if (craft()->varnishpurge->getSetting('varnishPurgeEnabled')) {
+        if (craft()->varnishpurge->getSetting('purgeEnabled')) {
             $purgeAction = craft()->elements->getAction('Varnishpurge_PurgeCache');
 
             $purgeAction->setParams(array(
@@ -58,7 +58,7 @@ class VarnishpurgePlugin extends BasePlugin
     {
         $actions = array();
 
-        if (craft()->varnishpurge->getSetting('varnishPurgeEnabled')) {
+        if (craft()->varnishpurge->getSetting('purgeEnabled')) {
             $purgeAction = craft()->elements->getAction('Varnishpurge_PurgeCache');
 
             $purgeAction->setParams(array(
