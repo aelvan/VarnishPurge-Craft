@@ -22,7 +22,7 @@ class VarnishpurgeService extends BaseApplicationComponent
      */
     public function purgeElements($elements, $purgeRelated = true)
     {
-        if (count($elements)>0) {
+        if (count($elements) > 0) {
 
             // Assume that we only want to purge elements in one locale.
             // May not be the case if other thirdparty plugins sends elements.
@@ -71,122 +71,64 @@ class VarnishpurgeService extends BaseApplicationComponent
 
         // Get related elements and their uris
         if ($getRelated) {
-            if ($element->getElementType() == ElementType::Entry) {
 
-                // get directly related entries
-                $relatedEntries = $this->_getRelatedElementsOfType($element, $locale, ElementType::Entry);
-                foreach ($relatedEntries as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
+            // get directly related entries
+            $relatedEntries = $this->_getRelatedElementsOfType($element, $locale, ElementType::Entry);
+            foreach ($relatedEntries as $related) {
+                if ($related->uri != '') {
+                    $uris[] = $related->uri;
                 }
-                unset($relatedEntries);
-
-                // get directly related categories
-                $relatedCategories = $this->_getRelatedElementsOfType($element, $locale, ElementType::Category);
-                foreach ($relatedCategories as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
-                }
-                unset($relatedCategories);
-
-                // get directly related matrix block and its owners uri
-                $relatedMatrixes = $this->_getRelatedElementsOfType($element, $locale, ElementType::MatrixBlock);
-                foreach ($relatedMatrixes as $relatedMatrixBlock) {
-                    if ($relatedMatrixBlock->owner->uri != '') {
-                        $uris[] = $relatedMatrixBlock->owner->uri;
-                    }
-                }
-                unset($relatedMatrixes);
-
             }
+            unset($relatedEntries);
 
-            if ($element->getElementType() == ElementType::Category) {
-
-                // get directly related entries
-                $relatedEntries = $this->_getRelatedElementsOfType($element, $locale, ElementType::Entry);
-                foreach ($relatedEntries as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
+            // get directly related categories
+            $relatedCategories = $this->_getRelatedElementsOfType($element, $locale, ElementType::Category);
+            foreach ($relatedCategories as $related) {
+                if ($related->uri != '') {
+                    $uris[] = $related->uri;
                 }
-                unset($relatedEntries);
-
-                // get directly related matrix block and its owners uri
-                $relatedMatrixes = $this->_getRelatedElementsOfType($element, $locale, ElementType::MatrixBlock);
-                foreach ($relatedMatrixes as $relatedMatrixBlock) {
-                    if ($relatedMatrixBlock->owner->uri != '') {
-                        $uris[] = $relatedMatrixBlock->owner->uri;
-                    }
-                }
-                unset($relatedMatrixes);
-
             }
+            unset($relatedCategories);
 
-            if ($element->getElementType() == ElementType::MatrixBlock) {
-
-                // get directly related entries
-                $relatedEntries = $this->_getRelatedElementsOfType($element, $locale, ElementType::Entry);
-                foreach ($relatedEntries as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
+            // get directly related matrix block and its owners uri
+            $relatedMatrixes = $this->_getRelatedElementsOfType($element, $locale, ElementType::MatrixBlock);
+            foreach ($relatedMatrixes as $relatedMatrixBlock) {
+                if ($relatedMatrixBlock->owner->uri != '') {
+                    $uris[] = $relatedMatrixBlock->owner->uri;
                 }
-                unset($relatedEntries);
-
-                // get directly related categories
-                $relatedCategories = $this->_getRelatedElementsOfType($element, $locale, ElementType::Category);
-                foreach ($relatedCategories as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
-                }
-                unset($relatedCategories);
-
             }
+            unset($relatedMatrixes);
 
-            if ($element->getElementType() == ElementType::Asset) {
-
-                // get directly related entries
-                $relatedEntries = $this->_getRelatedElementsOfType($element, $locale, ElementType::Entry);
-                foreach ($relatedEntries as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
+            // get directly related categories
+            $relatedCategories = $this->_getRelatedElementsOfType($element, $locale, ElementType::Category);
+            foreach ($relatedCategories as $related) {
+                if ($related->uri != '') {
+                    $uris[] = $related->uri;
                 }
-                unset($relatedEntries);
+            }
+            unset($relatedCategories);
 
-                // get directly related categories
-                $relatedCategories = $this->_getRelatedElementsOfType($element, $locale, ElementType::Category);
-                foreach ($relatedCategories as $related) {
-                    if ($related->uri != '') {
-                        $uris[] = $related->uri;
-                    }
+            // get directly Commerce products
+            $relatedProducts = $this->_getRelatedElementsOfType($element, $locale, 'Commerce_Product');
+            foreach ($relatedProducts as $related) {
+                if ($related->uri != '') {
+                    $uris[] = $related->uri;
                 }
-                unset($relatedCategories);
+            }
+            unset($relatedProducts);
+        }
 
-                // get directly related matrix block and its owners uri
-                $relatedMatrixes = $this->_getRelatedElementsOfType($element, $locale, ElementType::MatrixBlock);
-                foreach ($relatedMatrixes as $relatedMatrixBlock) {
-                    if ($relatedMatrixBlock->owner->uri != '') {
-                        $uris[] = $relatedMatrixBlock->owner->uri;
-                    }
-                }
-                unset($relatedMatrixes);
 
+        $uris = array_unique($uris);
+
+        foreach (craft()->plugins->call('varnishPurgeTransformElementUris', [$element, $uris]) as $plugin => $pluginUris) {
+            if ($pluginUris !== null) {
+                $uris = $pluginUris;
             }
         }
 
-		$uris = array_unique($uris);
-
-		foreach (craft()->plugins->call('varnishPurgeTransformElementUris', [$element, $uris]) as $plugin => $pluginUris) {
-			if ($pluginUris !== null) {
-				$uris = $pluginUris;
-			}
-		}
-
         return $uris;
+
     }
 
 
@@ -213,7 +155,7 @@ class VarnishpurgeService extends BaseApplicationComponent
      * @param $locale
      * @return array
      */
-    private function _generateUrls ($uris, $locale)
+    private function _generateUrls($uris, $locale)
     {
         $urls = array();
         $varnishUrlSetting = craft()->varnishpurge->getSetting('varnishUrl');
@@ -231,10 +173,9 @@ class VarnishpurgeService extends BaseApplicationComponent
 
         foreach ($uris as $uri) {
             $path = $uri == '__home__' ? '' : $uri;
-            $url = rtrim($varnishUrl, '/').'/'.trim($path, '/');
+            $url = rtrim($varnishUrl, '/') . '/' . trim($path, '/');
 
-            if ($path && craft()->config->get('addTrailingSlashesToUrls'))
-            {
+            if ($path && craft()->config->get('addTrailingSlashesToUrls')) {
                 $url .= '/';
             }
 
@@ -250,7 +191,8 @@ class VarnishpurgeService extends BaseApplicationComponent
      * @param $uris
      * @return array
      */
-    private function _getMappedUrls($urls) {
+    private function _getMappedUrls($urls)
+    {
         $mappedUrls = array();
         $map = $this->getSetting('purgeUrlMap');
 
