@@ -178,7 +178,15 @@ class VarnishpurgeService extends BaseApplicationComponent
             }
         }
 
-        return array_unique($uris);
+		$uris = array_unique($uris);
+
+		foreach (craft()->plugins->call('varnishPurgeTransformElementUris', [$element, $uris]) as $plugin => $pluginUris) {
+			if ($pluginUris !== null) {
+				$uris = $pluginUris;
+			}
+		}
+
+        return $uris;
     }
 
 
