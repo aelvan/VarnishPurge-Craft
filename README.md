@@ -11,17 +11,14 @@ Installation
 
 Configuration
 ---
-You need to configure Varnish Purge in order for it to do anything. Add the following settings to your
-config/general.php file:
+To configure Varnish Purge, create a new `varnishpurge.php` config file in your config folder, and override settings 
+as needed. The following settings are the default (found in `config.php` in the plugin folder):
 
-    'varnishUrl' => 'http://your-varnish-server.com/',
-    'varnishPurgeEnabled' => true,
-    'varnishPurgeRelated' => true,
-    'varnishLogAll' => 0,
-    'varnishPurgeUrlMap' => array(
-            'http://www.mydomain.com/en/' => 'http://www.mydomain.com/' 
-    ),
-    
+    'varnishUrl' => craft()->getSiteUrl(),
+    'purgeEnabled' => isset($_SERVER['HTTP_X_VARNISH']),
+    'purgeRelated' => true,
+    'logAll' => 0,
+    'purgeUrlMap' => [],
     
 The `varnishUrl` setting can also be an array if you are running a multi language site:
     
@@ -35,20 +32,20 @@ The url to your varnish server. Usually this is your site url, but it could be d
 through a private connection, or if you use the IP directly to bypass CloudFlare or similar services. If your
 site url and the varnish url is different, make sure you handle this in your VCL file.
 
-####varnishPurgeEnabled
+####purgeEnabled
 Enables or disables the Varnish Purge plugin. You'd normally want to disable it in your dev environments and
 enable it in your prod environment.
 
-####varnishPurgeRelated
+####purgeRelated
 Enables or disables purging of related urls when an element is saved. This should normally be enabled to make sure
 that all relevant urls are updated, but could be disabled on high traffic websites to make sure the cache stays as warm
 as possible.
 
-####varnishLogAll
+####logAll
 When set to `1` some additional logging is forced even if devMode is disabled. Useful for debugging in production 
 environments without having to enable devMode.
 
-####varnishPurgeUrlMap
+####purgeUrlMap
 A lookup map for purging additional urls that needs it when a given url is purged.
 
 
@@ -57,10 +54,10 @@ How it works
 When an element is saved, the plugin collects the urls *that it thinks need to be updated*, and creates a new task
 that sends purge requests to the Varnish server for each url.
 
-If `varnishPurgeRelated` is disabled, only the url for the element itself, or the owners url if the element is
+If `purgeRelated` is disabled, only the url for the element itself, or the owners url if the element is
 a Matrix block, is purged. 
 
-If `varnishPurgeRelated` is enabled, the urls for all related elements are also purged. If the saved element is
+If `purgeRelated` is enabled, the urls for all related elements are also purged. If the saved element is
 an entry, all directly related entry urls, all related category urls, and all urls for elements related through
 an entries Matrix blocks, is purged. If the saved element is an asset, all urls for elements related to that
 asset, either directly or through a Matrix block, is purged. And so on. The element types taken into account is
