@@ -143,8 +143,8 @@ class VarnishpurgeService extends BaseApplicationComponent
     private function _getRelatedElementsOfType($element, $locale, $elementType)
     {
         $elementTypeExists = craft()->elements->getElementType($elementType);
-        if(!$elementTypeExists) { return []; }
-        
+        if(!$elementTypeExists) { return array(); }
+
         $criteria = craft()->elements->getCriteria($elementType);
         $criteria->relatedTo = $element;
         $criteria->locale = $locale;
