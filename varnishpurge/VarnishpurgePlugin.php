@@ -66,18 +66,18 @@ class VarnishpurgePlugin extends BasePlugin
         return $this->_minVersion;
     }
 
-    
+
     public function init()
     {
         parent::init();
 
         if (craft()->varnishpurge->getSetting('purgeEnabled')) { // element saved
             craft()->on('elements.onSaveElement', function (Event $event) {
-                craft()->varnishpurge->purgeElement($event->params['element'], craft()->varnishpurge->getSetting('varnishPurgeRelated'));
+                craft()->varnishpurge->purgeElement($event->params['element'], craft()->varnishpurge->getSetting('purgeRelated'));
             });
         }
     }
-    
+
     public function addEntryActions()
     {
         $actions = array();
