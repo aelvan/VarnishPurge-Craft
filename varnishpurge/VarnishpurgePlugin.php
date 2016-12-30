@@ -5,7 +5,7 @@ namespace Craft;
 class VarnishpurgePlugin extends BasePlugin
 {
 
-    protected $_version = '0.2.0',
+    protected $_version = '0.2.1',
       $_schemaVersion = '1.0.0',
       $_name = 'Varnish Purge',
       $_url = 'https://github.com/aelvan/VarnishPurge-Craft',
