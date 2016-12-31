@@ -1,5 +1,15 @@
 [
     {
+        "version": "0.2.1",
+        "downloadUrl": "https://github.com/aelvan/VarnishPurge-Craft/archive/master.zip",
+        "date": "2016-12-31T17:24:00+02:00",
+        "notes": [
+            "[Fixed] PHP 5.3 syntax fix (by @miralize).",
+            "[Fixed] Fixed case where 'Commerce_Product' Element Type does not exist (by @miralize).",
+            "[Fixed] Fixed incorrect config name in onSaveElement event (by @miralize)."
+        ]
+    },
+    {
         "version": "0.2.0",
         "downloadUrl": "https://github.com/aelvan/VarnishPurge-Craft/archive/master.zip",
         "date": "2016-12-20T20:44:00+02:00",
