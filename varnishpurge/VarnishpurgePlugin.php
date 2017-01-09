@@ -5,7 +5,7 @@ namespace Craft;
 class VarnishpurgePlugin extends BasePlugin
 {
 
-    protected $_version = '0.2.1',
+    protected $_version = '0.2.2',
       $_schemaVersion = '1.0.0',
       $_name = 'Varnish Purge',
       $_url = 'https://github.com/aelvan/VarnishPurge-Craft',
@@ -71,10 +71,28 @@ class VarnishpurgePlugin extends BasePlugin
     {
         parent::init();
 
-        if (craft()->varnishpurge->getSetting('purgeEnabled')) { // element saved
-            craft()->on('elements.onSaveElement', function (Event $event) {
-                craft()->varnishpurge->purgeElement($event->params['element'], craft()->varnishpurge->getSetting('purgeRelated'));
+        if (craft()->varnishpurge->getSetting('purgeEnabled')) {
+
+            $purgeRelated = craft()->varnishpurge->getSetting('purgeRelated');
+
+            craft()->on('elements.onSaveElement', function (Event $event) { // element saved
+                craft()->varnishpurge->purgeElement($event->params['element'], $purgeRelated);
             });
+
+            craft()->on('entries.onDeleteEntry', function (Event $event) { //entry deleted
+                craft()->varnishpurge->purgeElement($event->params['entry'], $purgeRelated);
+            });
+
+    		craft()->on('elements.onBeforePerformAction', function(Event $event) { //entry deleted via element action
+    			$action = $event->params['action']->classHandle;
+    		    if ($action == 'Delete') {
+        		    $elements = $event->params['criteria']->find();
+    		        foreach ($elements as $element) {
+    		            if ($element->elementType !== 'Entry') { return; }
+    					craft()->varnishpurge->purgeElement($element, $purgeRelated);
+    		        }
+    		    }
+    		});
         }
     }
 

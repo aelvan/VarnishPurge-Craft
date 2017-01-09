@@ -1,5 +1,13 @@
 [
     {
+        "version": "0.2.2",
+        "downloadUrl": "https://github.com/aelvan/VarnishPurge-Craft/archive/master.zip",
+        "date": "2017-01-04T11:55:12+00:00",
+        "notes": [
+            "[Added] Purge entry on deletion (by @miralize).",
+        ]
+    },
+    {
         "version": "0.2.1",
         "downloadUrl": "https://github.com/aelvan/VarnishPurge-Craft/archive/master.zip",
         "date": "2016-12-31T17:24:00+02:00",
