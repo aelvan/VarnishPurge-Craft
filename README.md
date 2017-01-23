@@ -6,7 +6,7 @@ Installation
 ---
 1. Download and extract the contents of the zip. Copy the /varnishpurge folder to your Craft plugin folder. 
 2. Enable the Varnish Purge plugin in Craft (Settings > Plugins).
-3. Configure the plugin in your general.php config file (see "Configuration" below).
+3. Override default configuration if necessary (see "Configuration" below).
 4. Let the purge commence.
 
 Configuration
