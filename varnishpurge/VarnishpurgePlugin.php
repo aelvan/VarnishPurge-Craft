@@ -75,15 +75,15 @@ class VarnishpurgePlugin extends BasePlugin
 
             $purgeRelated = craft()->varnishpurge->getSetting('purgeRelated');
 
-            craft()->on('elements.onSaveElement', function (Event $event) { // element saved
+            craft()->on('elements.onSaveElement', function (Event $event) use($purgeRelated) { // element saved
                 craft()->varnishpurge->purgeElement($event->params['element'], $purgeRelated);
             });
 
-            craft()->on('entries.onDeleteEntry', function (Event $event) { //entry deleted
+            craft()->on('entries.onDeleteEntry', function (Event $event) use($purgeRelated) { //entry deleted
                 craft()->varnishpurge->purgeElement($event->params['entry'], $purgeRelated);
             });
 
-    		craft()->on('elements.onBeforePerformAction', function(Event $event) { //entry deleted via element action
+    		craft()->on('elements.onBeforePerformAction', function(Event $event) use($purgeRelated) { //entry deleted via element action
     			$action = $event->params['action']->classHandle;
     		    if ($action == 'Delete') {
         		    $elements = $event->params['criteria']->find();
