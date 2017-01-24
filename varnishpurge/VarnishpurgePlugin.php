@@ -96,7 +96,7 @@ class VarnishpurgePlugin extends BasePlugin
         }
     }
 
-    public function addEntryActions()
+    public function addEntryActions($source)
     {
 		return $this->purgeElement($source);
     }
