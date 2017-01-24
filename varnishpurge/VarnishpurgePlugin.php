@@ -96,38 +96,35 @@ class VarnishpurgePlugin extends BasePlugin
         }
     }
 
-    public function addEntryActions()
+    public function addEntryActions($source)
     {
-        $actions = array();
-
-        if (craft()->varnishpurge->getSetting('purgeEnabled')) {
-            $purgeAction = craft()->elements->getAction('Varnishpurge_PurgeCache');
-
-            $purgeAction->setParams(array(
-              'label' => Craft::t('Purge cache'),
-            ));
-
-            $actions[] = $purgeAction;
-        }
-
-        return $actions;
+		return $this->purgeElement($source);
     }
 
     public function addCategoryActions()
     {
-        $actions = array();
-
-        if (craft()->varnishpurge->getSetting('purgeEnabled')) {
-            $purgeAction = craft()->elements->getAction('Varnishpurge_PurgeCache');
-
-            $purgeAction->setParams(array(
-              'label' => Craft::t('Purge cache'),
-            ));
-
-            $actions[] = $purgeAction;
-        }
-
-        return $actions;
+		return $this->purgeElement($source);
     }
 
+	public function addAssetActions($source)
+	{
+		return $this->purgeElement($source);
+	}
+
+	private function purgeElement($source)
+	{
+		$actions = array();
+
+		if (craft()->varnishpurge->getSetting('purgeEnabled')) {
+			$purgeAction = craft()->elements->getAction('Varnishpurge_PurgeCache');
+
+			$purgeAction->setParams(array(
+			  'label' => Craft::t('Purge cache'),
+			));
+
+			$actions[] = $purgeAction;
+		}
+
+		return $actions;
+	}
 }
