@@ -74,6 +74,9 @@ class VarnishpurgePlugin extends BasePlugin
         if (craft()->varnishpurge->getSetting('purgeEnabled')) {
 
             $purgeRelated = craft()->varnishpurge->getSetting('purgeRelated');
+		        craft()->on('structures.moveElement', function (Event $event) use ($purgeRelated) { // element moved inside structure
+			          craft()->varnishpurge->purgeElement($event->params['element'], $purgeRelated);
+		        });
 
             craft()->on('elements.onSaveElement', function (Event $event) use($purgeRelated) { // element saved
                 craft()->varnishpurge->purgeElement($event->params['element'], $purgeRelated);
